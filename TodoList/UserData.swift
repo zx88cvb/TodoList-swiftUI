@@ -23,11 +23,23 @@ class ToDo: ObservableObject {
         }
     }
     
+    ///  根据id查询item
+    /// - Parameter id: ToDo id值
     func check(id: Int) {
         self.TodoList[id].isChecked.toggle()
     }
+    
+    
+    /// 添加todo
+    /// - Parameter data: ToDo数据
+    func add(data: SingleToDo) {
+        self.TodoList.append(SingleToDo(id: self.count, title: data.title, duedate: data.duedate))
+        count += 1
+    }
 }
 
+
+/// ToDo对象结构体
 struct SingleToDo: Identifiable {
     var id: Int = 0
     // 标题

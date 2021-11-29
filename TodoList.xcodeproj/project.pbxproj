@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0090BC00275501EF00E33BC8 /* EditingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0090BBFF275501EF00E33BC8 /* EditingPage.swift */; };
 		00ED94BA27535DCD00DEED04 /* TodoListApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00ED94B927535DCD00DEED04 /* TodoListApp.swift */; };
 		00ED94BC27535DCD00DEED04 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00ED94BB27535DCD00DEED04 /* ContentView.swift */; };
 		00ED94BE27535DCE00DEED04 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 00ED94BD27535DCE00DEED04 /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0090BBFF275501EF00E33BC8 /* EditingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditingPage.swift; sourceTree = "<group>"; };
 		00ED94B627535DCD00DEED04 /* TodoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TodoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00ED94B927535DCD00DEED04 /* TodoListApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoListApp.swift; sourceTree = "<group>"; };
 		00ED94BB27535DCD00DEED04 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -55,6 +57,7 @@
 			children = (
 				00ED94B927535DCD00DEED04 /* TodoListApp.swift */,
 				00ED94BB27535DCD00DEED04 /* ContentView.swift */,
+				0090BBFF275501EF00E33BC8 /* EditingPage.swift */,
 				00ED94BD27535DCE00DEED04 /* Assets.xcassets */,
 				00ED94BF27535DCE00DEED04 /* Preview Content */,
 				00ED94C72753B86C00DEED04 /* UserData.swift */,
@@ -141,6 +144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				00ED94C82753B86C00DEED04 /* UserData.swift in Sources */,
+				0090BC00275501EF00E33BC8 /* EditingPage.swift in Sources */,
 				00ED94BC27535DCD00DEED04 /* ContentView.swift in Sources */,
 				00ED94BA27535DCD00DEED04 /* TodoListApp.swift in Sources */,
 			);

@@ -14,13 +14,39 @@ struct ContentView: View {
         SingleToDo(title: "Sleep", duedate: Date())
     ])
     
+    @State var showEditingPage: Bool = false
+    
     var body: some View {
-        ScrollView(.vertical, showsIndicators: true) {
-            VStack {
-                ForEach(self.userData.TodoList) {item in
-                    SingleCardView(index: item.id)
-                        .environmentObject(self.userData)
-                    .padding(.horizontal)
+        ZStack {
+            NavigationView {
+                ScrollView(.vertical, showsIndicators: true) {
+                    VStack {
+                        ForEach(self.userData.TodoList) {item in
+                            SingleCardView(index: item.id)
+                                .environmentObject(self.userData)
+                            .padding(.horizontal)
+                            .padding(.top)
+                        }
+                    }
+                }.navigationTitle("提醒事项")
+            }
+            
+            HStack {
+                Spacer()
+                VStack {
+                    Spacer()
+                    Button(action: {
+                        self.showEditingPage = true
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 80)
+                            .foregroundColor(.blue)
+                            .padding(.trailing)
+                    }.sheet(isPresented: self.$showEditingPage, content: {
+                        EditingPage().environmentObject(self.userData)
+                    })
                 }
             }
         }
