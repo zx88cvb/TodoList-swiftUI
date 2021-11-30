@@ -7,18 +7,21 @@
 
 import Foundation
 
+var encoder = JSONEncoder()
+var decoder = JSONDecoder()
+
 class ToDo: ObservableObject {
-    @Published var TodoList: [SingleToDo]
+    @Published var todoList: [SingleToDo]
     var count: Int = 0
     
     init() {
-        self.TodoList = []
+        self.todoList = []
     }
     
     init(data: [SingleToDo]) {
-        self.TodoList = []
+        self.todoList = []
         for item in data {
-            self.TodoList.append(SingleToDo(id: self.count, title: item.title, duedate: item.duedate))
+            self.todoList.append(SingleToDo(id: self.count, title: item.title, duedate: item.duedate, isChecked: item.isChecked))
             count += 1
         }
     }
@@ -26,21 +29,70 @@ class ToDo: ObservableObject {
     ///  根据id查询item
     /// - Parameter id: ToDo id值
     func check(id: Int) {
-        self.TodoList[id].isChecked.toggle()
+        self.todoList[id].isChecked.toggle()
+        
+        self.dataStore()
     }
     
     
     /// 添加todo
     /// - Parameter data: ToDo数据
     func add(data: SingleToDo) {
-        self.TodoList.append(SingleToDo(id: self.count, title: data.title, duedate: data.duedate))
+        self.todoList.append(SingleToDo(id: self.count, title: data.title, duedate: data.duedate))
         count += 1
+        self.sort()
+        
+        self.dataStore()
+    }
+    
+    
+    /// 编辑
+    /// - Parameters:
+    ///   - id: id
+    ///   - data: todo数据
+    func edit(id: Int, data: SingleToDo) {
+        self.todoList[id].title = data.title
+        self.todoList[id].duedate = data.duedate
+        self.todoList[id].isChecked = false
+        
+        self.sort()
+        
+        self.dataStore()
+    }
+    
+    
+    /// 删除元素
+    /// - Parameter id: id
+    func delete(id: Int) {
+        self.todoList[id].deleted = true
+        self.sort()
+        
+        self.dataStore()
+    }
+    
+    /// 排序
+    func sort() {
+        self.todoList.sort(by: {
+            (data1, data2) in
+            return data1.duedate.timeIntervalSince1970 < data2.duedate.timeIntervalSince1970
+        })
+        
+        for i in 0..<self.todoList.count {
+            self.todoList[i].id = i
+        }
+    }
+    
+    
+    /// 数据存储
+    func dataStore() {
+        let dataStored = try! encoder.encode(self.todoList)
+        UserDefaults.standard.set(dataStored, forKey: "TodoList")
     }
 }
 
 
 /// ToDo对象结构体
-struct SingleToDo: Identifiable {
+struct SingleToDo: Identifiable, Codable {
     var id: Int = 0
     // 标题
     var title: String = ""
@@ -48,4 +100,6 @@ struct SingleToDo: Identifiable {
     var duedate: Date = Date()
     // 是否选中
     var isChecked: Bool = false
+    // 是否删除
+    var deleted: Bool = false
 }

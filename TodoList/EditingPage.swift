@@ -13,6 +13,8 @@ struct EditingPage: View {
     @State var title: String = ""
     @State var duedate: Date = Date()
     
+    var id: Int? = nil
+    
     
     @Environment(\.presentationMode) var presentation
     
@@ -26,7 +28,12 @@ struct EditingPage: View {
                 
                 Section {
                     Button(action: {
-                        self.userData.add(data: SingleToDo(title: self.title, duedate: self.duedate))
+                        if(id == nil) {
+                            self.userData.add(data: SingleToDo(title: self.title, duedate: self.duedate))
+                        } else {
+                            self.userData.edit(id: self.id!, data: SingleToDo(title: self.title, duedate: self.duedate))
+                        }
+                        
                         self.presentation.wrappedValue.dismiss()
                     }) {
                         Text("确定")
