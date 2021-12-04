@@ -17,7 +17,7 @@ func initUserData() -> [SingleToDo] {
         for item in data {
             // 没有被删除才放进卡片
             if(!item.deleted) {
-                output.append(SingleToDo(id: data.count, title: item.title, duedate: item.duedate, isChecked: item.isChecked))
+                output.append(SingleToDo(id: data.count, title: item.title, duedate: item.duedate, isChecked: item.isChecked, isFavorite: item.isFavorite))
             }
         }
     }
@@ -34,6 +34,8 @@ struct ContentView: View {
     @State var editMode: Bool = false
     // 选中卡片数组
     @State var selection: [Int] = []
+    // 是否是收藏模式
+    @State var showLikeOnly: Bool = false
     
     var body: some View {
         ZStack {
@@ -41,8 +43,8 @@ struct ContentView: View {
                 ScrollView(.vertical, showsIndicators: true) {
                     VStack {
                         ForEach(self.userData.todoList) {item in
-                            // 没有被删除才放进卡片
-                            if(!item.deleted) {
+                            // 没有被删除才放进卡片 且 (如果是非收藏模式 或者 收藏模式下只显示收藏的卡片)
+                            if(!item.deleted && (!self.showLikeOnly || item.isFavorite)) {
                                 SingleCardView(editMode: self.$editMode, selection: self.$selection, index: item.id)
                                     .environmentObject(self.userData)
                                 .padding(.horizontal)
@@ -58,9 +60,14 @@ struct ContentView: View {
                     HStack(spacing: 20) {
                         // 只有编辑模式才显示删除按钮
                         if(self.editMode) {
-                            DeleteButton(selection: self.$selection)
+                            DeleteButton(selection: self.$selection, editMode: self.$editMode)
                                 .environmentObject(self.userData)
+                            LikeButton(selection: self.$selection, editMode: self.$editMode)
+                                .environmentObject(self.userData)
+                        } else {
+                            ShowLikeButton(showLikeOnly: self.$showLikeOnly)
                         }
+                        
                         EditingButton(editMode: self.$editMode, selection: self.$selection)
                     }
                 }
@@ -90,6 +97,49 @@ struct ContentView: View {
 }
 
 
+/// 多选收藏
+struct LikeButton: View {
+    // 选中卡片数组
+    @Binding var selection: [Int]
+    // 展示选择右上角编辑按钮
+    @Binding var editMode: Bool
+    
+    @EnvironmentObject var userData: ToDo
+     
+    var body: some View {
+        Button(action: {
+            
+        }) {
+            Image(systemName: "star.lefthalf.fill")
+                .imageScale(.large)
+                .foregroundColor(.yellow)
+                .onTapGesture {
+                    for i in selection {
+                        self.userData.todoList[i].isFavorite.toggle()
+                    }
+                    if (selection.isEmpty) {
+                        self.editMode = false
+                    }
+                }
+        }
+    }
+}
+
+/// 展示收藏卡片
+struct ShowLikeButton: View {
+    @Binding var showLikeOnly: Bool
+    
+    var body: some View {
+        Button(action: {
+            self.showLikeOnly.toggle()
+        }) {
+            Image(systemName: self.showLikeOnly ? "star.fill": "star")
+                .imageScale(.large)
+                .foregroundColor(.yellow)
+        }
+    }
+}
+
 /// 右上角编辑按钮
 struct EditingButton: View {
     @Binding var editMode: Bool
@@ -113,12 +163,18 @@ struct DeleteButton: View {
     // 选中卡片数组
     @Binding var selection: [Int]
     
+    // 展示选择右上角编辑按钮
+    @Binding var editMode: Bool
+    
     @EnvironmentObject var userData: ToDo
     
     var body: some View {
         Button(action: {
             for i in self.selection {
                 self.userData.delete(id: i)
+            }
+            if selection.isEmpty {
+                self.editMode = false
             }
         }) {
             Image(systemName: "trash")
@@ -145,12 +201,13 @@ struct SingleCardView: View {
             // 蓝色矩形
             Rectangle()
                 .frame(width: 6)
-                .foregroundColor(.blue)
+                .foregroundColor(Color(self.userData.todoList[index].isFavorite ? "Favorite_Color" : "Default_Color"))
             
             // 如果处于编辑模式则显示删除按钮
             if(editMode) {
                 Button(action: {
                     self.userData.delete(id: self.index)
+                    self.editMode = false
                 }) {
                     Image(systemName: "trash")
                         .imageScale(.large)
@@ -184,9 +241,18 @@ struct SingleCardView: View {
             .sheet(isPresented: self.$showEditingPage, content: {
                 EditingPage(title: self.userData.todoList[index].title,
                             duedate: self.userData.todoList[index].duedate,
+                            isFavorite: self.userData.todoList[index].isFavorite,
                             id: self.index)
                     .environmentObject(self.userData)
             })
+            
+            
+            // 收藏
+            if (self.userData.todoList[index].isFavorite) {
+                Image(systemName: "star.fill")
+                    .imageScale(.large)
+                    .foregroundColor(.yellow)
+            }
             
             // 如果处于编辑模式则显示圆形按钮
             if(editMode) {

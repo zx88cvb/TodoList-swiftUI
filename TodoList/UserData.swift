@@ -21,7 +21,7 @@ class ToDo: ObservableObject {
     init(data: [SingleToDo]) {
         self.todoList = []
         for item in data {
-            self.todoList.append(SingleToDo(id: self.count, title: item.title, duedate: item.duedate, isChecked: item.isChecked))
+            self.todoList.append(SingleToDo(id: self.count, title: item.title, duedate: item.duedate, isChecked: item.isChecked, isFavorite: item.isFavorite))
             count += 1
         }
     }
@@ -38,7 +38,7 @@ class ToDo: ObservableObject {
     /// 添加todo
     /// - Parameter data: ToDo数据
     func add(data: SingleToDo) {
-        self.todoList.append(SingleToDo(id: self.count, title: data.title, duedate: data.duedate))
+        self.todoList.append(SingleToDo(id: self.count, title: data.title, duedate: data.duedate, isFavorite: data.isFavorite))
         count += 1
         self.sort()
         
@@ -54,6 +54,7 @@ class ToDo: ObservableObject {
         self.todoList[id].title = data.title
         self.todoList[id].duedate = data.duedate
         self.todoList[id].isChecked = false
+        self.todoList[id].isFavorite = data.isFavorite
         
         self.sort()
         
@@ -100,6 +101,8 @@ struct SingleToDo: Identifiable, Codable {
     var duedate: Date = Date()
     // 是否选中
     var isChecked: Bool = false
+    // 是否收藏
+    var isFavorite: Bool = false
     // 是否删除
     var deleted: Bool = false
 }
