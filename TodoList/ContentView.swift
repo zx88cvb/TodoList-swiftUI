@@ -7,14 +7,24 @@
 
 import SwiftUI
 
+var formatter = DateFormatter()
 
 /// 初始化卡片数据
 /// - Returns: 卡片数组
 func initUserData() -> [SingleToDo] {
+    formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    
     var output: [SingleToDo] = []
     if let dataStored = UserDefaults.standard.object(forKey: "TodoList") as? Data {
-        let data = try! decoder.decode([SingleToDo].self, from: dataStored)
-        for item in data {
+        var data: [SingleToDo] = []
+        do {
+            data = try decoder.decode([SingleToDo].self, from: dataStored)
+        } catch {
+            print("error:\(error)")
+            data = []
+        }
+        
+        for item in data    {
             // 没有被删除才放进卡片
             if(!item.deleted) {
                 output.append(SingleToDo(id: data.count, title: item.title, duedate: item.duedate, isChecked: item.isChecked, isFavorite: item.isFavorite))
@@ -229,7 +239,8 @@ struct SingleCardView: View {
                             .font(.headline)
                             .fontWeight(.heavy)
                             .foregroundColor(.black)
-                        Text(self.userData.todoList[index].duedate.description)
+                            .strikethrough(self.userData.todoList[index].isChecked)
+                        Text(formatter.string(from: self.userData.todoList[index].duedate))
                             .font(.subheadline)
                             .foregroundColor(Color.gray)
                     }
@@ -291,8 +302,8 @@ struct SingleCardView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView(userData: ToDo(data: [
-            SingleToDo(title: "Eat", duedate: Date()),
-            SingleToDo(title: "Sleep", duedate: Date())
+            SingleToDo(title: "Eat", duedate: Date(), isFavorite: false),
+            SingleToDo(title: "Sleep", duedate: Date(), isFavorite: false)
         ]))
     }
 }
